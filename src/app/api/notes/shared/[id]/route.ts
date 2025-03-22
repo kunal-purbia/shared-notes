@@ -7,6 +7,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   await connectDatabase();
+  if (!params || !params.id) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
   const note = await Note.findById(params?.id);
   if (!note) {
     return NextResponse.json({ error: "Note not found" }, { status: 404 });

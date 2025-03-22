@@ -4,8 +4,15 @@ import { connectDatabase } from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import Note from "@/models/Notes.Schema";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connectDatabase();
+
+  if (!params || !params.id) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
 
   const user: any = await verifyToken(req);
   if (!user)
@@ -19,9 +26,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(note);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connectDatabase();
-
+  if (!params || !params.id) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
   const user: any = await verifyToken(req);
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -46,7 +58,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   await connectDatabase();
-
+  if (!params || !params.id) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
   const user: any = await verifyToken(req);
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
