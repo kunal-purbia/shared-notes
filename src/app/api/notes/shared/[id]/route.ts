@@ -4,13 +4,14 @@ import Note from "@/models/Notes.Schema";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   await connectDatabase();
-  if (!params || !params.id) {
+  const { id } = await context.params;
+  if (!id) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
-  const note = await Note.findById(params?.id);
+  const note = await Note.findById(id);
   if (!note) {
     return NextResponse.json({ error: "Note not found" }, { status: 404 });
   }
