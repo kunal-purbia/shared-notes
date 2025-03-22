@@ -8,6 +8,15 @@ export async function POST(req: NextRequest) {
     await connectDatabase();
     const { email, password } = await req.json();
 
+    const existingUserCheck = await User.findOne({ email });
+
+    if (existingUserCheck) {
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 200 }
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashedPassword });
     await user.save();
