@@ -7,11 +7,11 @@ export async function POST(req: NextRequest) {
   await connectDatabase();
 
   const { title, content, sharedWith } = await req.json();
-
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.redirect("/auth/login");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  console.log(title, content, sharedWith, user);
   if (!title || !content) {
     return NextResponse.json(
       { message: "Title and content are required" },
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   }
 
   const note = await Note.create({
-    userId: user.id,
+    userId: user.userId,
     title,
     content,
     sharedWith,
@@ -34,8 +34,8 @@ export async function GET(req: NextRequest) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.redirect("/auth/login");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const notes = await Note.find({ userId: user.id });
-  return NextResponse.json(notes);
+  const notes = await Note.find({ userId: user.userId });
+  return NextResponse.json({ notes });
 }

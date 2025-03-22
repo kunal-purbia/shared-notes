@@ -2,9 +2,12 @@ import { connectDatabase } from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import Note from "@/models/Notes.Schema";
 
-export async function GET(req: NextRequest, { params }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connectDatabase();
-  const note = await Note.findById(params.id);
+  const note = await Note.findById(params?.id);
   if (!note) {
     return NextResponse.json({ error: "Note not found" }, { status: 404 });
   }

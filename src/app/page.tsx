@@ -7,15 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: "24px",
-      }}
-    >
+    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
       <Button onClick={() => router.push("/auth/register")}>Register</Button>
       <Button onClick={() => router.push("/auth/login")}>Login</Button>
     </Box>

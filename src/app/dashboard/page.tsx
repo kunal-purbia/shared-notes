@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [notes, setNotes] = useState([]);
   const [toaster, setToaster] = useState<any>(null);
   const [searchValue, setSearchValue] = useState("");
+
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -20,7 +21,11 @@ const Dashboard = () => {
         },
       });
       const res = await result.json();
-      setNotes(res.notes);
+      if (res.message === "Unauthorized") {
+        router.push("/auth/login");
+      } else {
+        setNotes(res.notes);
+      }
     } catch (error) {
       console.log("Error while fetching notes", error);
       setToaster({
@@ -64,6 +69,17 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    if (searchValue === "") {
+      fetchNotes();
+    } else {
+      const newNotes = notes.filter((note) =>
+        note?.title.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setNotes(newNotes);
+    }
+  }, [searchValue]);
+
+  useEffect(() => {
     fetchNotes();
   }, []);
   return (
@@ -77,38 +93,29 @@ const Dashboard = () => {
         <Box>
           {notes &&
             notes.length > 0 &&
-            notes.filter((note) =>
-              note?.title
-                .toLowerCase()
-                .includes(searchValue.toLowerCase())
-                .map((note, index) => (
-                  <Box
-                    sx={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                    key={index}
+            notes.map((note, index) => (
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+                key={index}
+              >
+                <Typography>{note.title}</Typography>
+                <Box>
+                  <Button
+                    onClick={() => router.push(`/dashboard/edit/${note._id}`)}
                   >
-                    <Typography>note.title</Typography>
-                    <Box>
-                      <Button
-                        onClick={() =>
-                          router.push(`/dashboard/edit/${note._id}`)
-                        }
-                      >
-                        Edit
-                      </Button>
-                      <Button onClick={() => handleDelete(note._id)}>
-                        Delete
-                      </Button>
-                      <Button onClick={() => handleShareNote(note._id)}>
-                        Share
-                      </Button>
-                    </Box>
-                  </Box>
-                ))
-            )}
+                    Edit
+                  </Button>
+                  <Button onClick={() => handleDelete(note._id)}>Delete</Button>
+                  <Button onClick={() => handleShareNote(note._id)}>
+                    Share
+                  </Button>
+                </Box>
+              </Box>
+            ))}
         </Box>
         <Button onClick={() => router.push("/dashboard/new")}>
           Create Notes

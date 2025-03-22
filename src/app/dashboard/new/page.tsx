@@ -40,7 +40,7 @@ const CreateNote = () => {
 
   return (
     <>
-      <Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         <Typography>Title</Typography>
         <TextField
           value={title}

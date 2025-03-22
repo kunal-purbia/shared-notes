@@ -8,10 +8,10 @@ export async function GET(req: NextRequest, { params }) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.redirect("/auth/login");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const note = await Note.findById(params.id);
-  if (!note || note.userId !== user.id) {
+  if (!note || note.userId !== user.userId) {
     return NextResponse.json({ error: "Note not found." }, { status: 404 });
   }
 
@@ -23,10 +23,10 @@ export async function PUT(req: NextRequest, { params }) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.redirect("/auth/login");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const note = await Note.findById(params.id);
-  if (!note || note.userId !== user.id) {
+  if (!note || note.userId !== user.userId) {
     return NextResponse.json({ error: "Note not found." }, { status: 404 });
   }
 
@@ -40,15 +40,18 @@ export async function PUT(req: NextRequest, { params }) {
   return NextResponse.json(note);
 }
 
-export async function DELETE(req: NextRequest, { params }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await connectDatabase();
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.redirect("/auth/login");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const note = await Note.findById(params.id);
-  if (!note || note.userId !== user.id) {
+  if (!note || note.userId !== user.userId) {
     return NextResponse.json({ error: "Note not found." }, { status: 404 });
   }
 
