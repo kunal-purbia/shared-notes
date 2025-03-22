@@ -53,6 +53,16 @@ const Dashboard = () => {
     }
   };
 
+  const handleShareNote = async (id: string) => {
+    const shareUrl = `${window.location.origin}/notes/shared/${id}`;
+    navigator.clipboard.writeText(shareUrl);
+    setToaster({
+      open: true,
+      message: "URL copy to clipboard",
+      onClose: () => setToaster(null),
+    });
+  };
+
   useEffect(() => {
     fetchNotes();
   }, []);
@@ -91,6 +101,9 @@ const Dashboard = () => {
                       </Button>
                       <Button onClick={() => handleDelete(note._id)}>
                         Delete
+                      </Button>
+                      <Button onClick={() => handleShareNote(note._id)}>
+                        Share
                       </Button>
                     </Box>
                   </Box>
