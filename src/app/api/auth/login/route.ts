@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const authToken = jwt.sign(
       { userId: user._id, email: user.email },
-      JWT_SECRET
+      JWT_SECRET!
     );
 
     return NextResponse.json(
