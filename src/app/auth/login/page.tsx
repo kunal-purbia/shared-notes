@@ -1,9 +1,86 @@
-import React from 'react'
+"use client";
+import { Toaster } from "@/components/Toaster";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 const Login = () => {
-  return (
-    <div>Login</div>
-  )
-}
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [toaster, setToaster] = useState<any>(null);
 
-export default Login
+  const handleLogin = async (e: any) => {
+    try {
+      e.preventDefault();
+      const result = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const res = await result.json();
+      if (res.token && res.message === "Account login successfull") {
+        localStorage.setItem("token", res.token);
+        setToaster({
+          open: true,
+          message: res.message,
+          onClose: () => setToaster(null),
+        });
+        router.push("/auth/dashboard");
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (error) {
+      console.log("Error while registration", error);
+      setToaster({
+        open: true,
+        message: "Error while registration",
+        onClose: () => setToaster(null),
+      });
+    }
+  };
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          height: "100vh",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          sx={{
+            padding: "16px",
+            border: "2px solid black",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Typography>Email</Typography>
+          <TextField
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+          />
+          <Typography>Password</Typography>
+          <TextField
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+          />
+          <Button onClick={handleLogin}>Login</Button>
+        </Box>
+      </Box>
+      {toaster && (
+        <Toaster
+          open={toaster.open}
+          message={toaster.message}
+          onClose={toaster.onClose}
+        />
+      )}
+    </>
+  );
+};
+
+export default Login;

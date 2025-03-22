@@ -1,9 +1,11 @@
 "use client";
 import { Toaster } from "@/components/Toaster";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Register = () => {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [toaster, setToaster] = useState<any>(null);
@@ -16,7 +18,13 @@ const Register = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log(await result.json());
+      const res = await result.json();
+      setToaster({
+        open: true,
+        message: res.message,
+        onClose: () => setToaster(null),
+      });
+      router.push("/auth/login");
     } catch (error) {
       console.log("Error while registration", error);
       setToaster({
