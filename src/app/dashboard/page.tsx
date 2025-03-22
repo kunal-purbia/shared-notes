@@ -1,6 +1,6 @@
 "use client";
 import { Toaster } from "@/components/Toaster";
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -26,6 +26,28 @@ const Dashboard = () => {
       setToaster({
         open: true,
         message: "Error while fetching notes",
+        onClose: () => setToaster(null),
+      });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const token = await localStorage.getItem("token");
+      const result = await fetch(`/api/notes/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      });
+      await result.json();
+      fetchNotes();
+    } catch (error) {
+      console.log("Error while deleting note", error);
+      setToaster({
+        open: true,
+        message: "Error while deleting note",
         onClose: () => setToaster(null),
       });
     }
@@ -60,8 +82,16 @@ const Dashboard = () => {
                   >
                     <Typography>note.title</Typography>
                     <Box>
-                      <Button>Edit</Button>
-                      <Button>Delete</Button>
+                      <Button
+                        onClick={() =>
+                          router.push(`/dashboard/edit/${note._id}`)
+                        }
+                      >
+                        Edit
+                      </Button>
+                      <Button onClick={() => handleDelete(note._id)}>
+                        Delete
+                      </Button>
                     </Box>
                   </Box>
                 ))
