@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -24,7 +25,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <Box
+          sx={{
+            display: "flex",
+            height: "100vh",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Box
+            sx={{
+              padding: "16px",
+              border: "2px solid black",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {children}
+          </Box>
+        </Box>
       </body>
     </html>
   );

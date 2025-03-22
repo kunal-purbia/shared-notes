@@ -4,19 +4,22 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const Register = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+const CreateNote = () => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [toaster, setToaster] = useState<any>(null);
-
-  const handleRegister = async (e: any) => {
+  const router = useRouter();
+  const handleSaveNote = async (e: any) => {
     try {
       e.preventDefault();
-      const result = await fetch("/api/auth/signup", {
+      const token = localStorage.getItem("token");
+      const result = await fetch("/api/notes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, content, sharedWith: [] }),
       });
       const res = await result.json();
       setToaster({
@@ -24,34 +27,34 @@ const Register = () => {
         message: res.message,
         onClose: () => setToaster(null),
       });
-      router.push("/auth/login");
+      router.push("/dashboard");
     } catch (error) {
       console.log("Error while registration", error);
       setToaster({
         open: true,
-        message: "Error while registration",
+        message: "Error while creating note",
         onClose: () => setToaster(null),
       });
     }
   };
+
   return (
     <>
       <Box>
-        <Typography>Email</Typography>
+        <Typography>Title</Typography>
         <TextField
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          type="string"
         />
-        <Typography>Password</Typography>
+        <Typography>Content</Typography>
         <TextField
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          type="string"
         />
-        <Button onClick={handleRegister}>Register</Button>
+        <Button onClick={handleSaveNote}>Save Note</Button>
       </Box>
-
       {toaster && (
         <Toaster
           open={toaster.open}
@@ -63,4 +66,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default CreateNote;

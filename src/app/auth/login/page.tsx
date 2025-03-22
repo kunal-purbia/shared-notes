@@ -41,37 +41,22 @@ const Login = () => {
   };
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          sx={{
-            padding: "16px",
-            border: "2px solid black",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography>Email</Typography>
-          <TextField
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-          />
-          <Typography>Password</Typography>
-          <TextField
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-          />
-          <Button onClick={handleLogin}>Login</Button>
-        </Box>
+      <Box>
+        <Typography>Email</Typography>
+        <TextField
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          type="email"
+        />
+        <Typography>Password</Typography>
+        <TextField
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+        />
+        <Button onClick={handleLogin}>Login</Button>
       </Box>
+
       {toaster && (
         <Toaster
           open={toaster.open}
