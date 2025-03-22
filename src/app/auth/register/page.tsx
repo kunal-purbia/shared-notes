@@ -11,9 +11,24 @@ const Register = () => {
   const [password, setPassword] = useState<string>("");
   const [toaster, setToaster] = useState<any>(null);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleRegister = async (e: any) => {
+    e.preventDefault();
+
+    if (!validateEmail(email)) {
+      setToaster({
+        open: true,
+        message: "Invalid email format",
+        onClose: () => setToaster(null),
+      });
+      return;
+    }
+
     try {
-      e.preventDefault();
       const result = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,7 +40,9 @@ const Register = () => {
         message: res.message,
         onClose: () => setToaster(null),
       });
-      router.push("/auth/login");
+      if (res.message === "Account sign up successfull") {
+        router.push("/auth/login");
+      }
     } catch (error) {
       console.log("Error while registration", error);
       setToaster({
@@ -35,6 +52,7 @@ const Register = () => {
       });
     }
   };
+
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>

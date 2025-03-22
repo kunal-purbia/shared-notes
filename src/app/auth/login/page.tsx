@@ -11,9 +11,24 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [toaster, setToaster] = useState<any>(null);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async (e: any) => {
+    e.preventDefault();
+
+    if (!validateEmail(email)) {
+      setToaster({
+        open: true,
+        message: "Invalid email format",
+        onClose: () => setToaster(null),
+      });
+      return;
+    }
+
     try {
-      e.preventDefault();
       const result = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,15 +46,16 @@ const Login = () => {
       } else {
         throw new Error(res.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error while login", error);
       setToaster({
         open: true,
-        message: `Error: ${error}`,
+        message: `Error: ${error.message || "Something went wrong"}`,
         onClose: () => setToaster(null),
       });
     }
   };
+
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
