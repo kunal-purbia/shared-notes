@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [notes, setNotes] = useState([]);
   const [toaster, setToaster] = useState<any>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchNotes = async () => {
     try {
@@ -33,11 +34,14 @@ const Dashboard = () => {
         message: "Error while fetching notes",
         onClose: () => setToaster(null),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
+      setLoading(true);
       const token = await localStorage.getItem("token");
       const result = await fetch(`/api/notes/${id}`, {
         method: "DELETE",
@@ -55,6 +59,8 @@ const Dashboard = () => {
         message: "Error while deleting note",
         onClose: () => setToaster(null),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,43 +90,49 @@ const Dashboard = () => {
   }, []);
   return (
     <>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <TextField
-          label="Search Notes"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-        <Box>
-          {notes &&
-            notes.length > 0 &&
-            notes.map((note, index) => (
-              <Box
-                sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-                key={index}
-              >
-                <Typography>{note.title}</Typography>
-                <Box>
-                  <Button
-                    onClick={() => router.push(`/dashboard/edit/${note._id}`)}
-                  >
-                    Edit
-                  </Button>
-                  <Button onClick={() => handleDelete(note._id)}>Delete</Button>
-                  <Button onClick={() => handleShareNote(note._id)}>
-                    Share
-                  </Button>
+      {loading ? (
+        <Box>LOADING...</Box>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <TextField
+            label="Search Notes"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+          <Box>
+            {notes &&
+              notes.length > 0 &&
+              notes.map((note, index) => (
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                  key={index}
+                >
+                  <Typography>{note.title}</Typography>
+                  <Box>
+                    <Button
+                      onClick={() => router.push(`/dashboard/edit/${note._id}`)}
+                    >
+                      Edit
+                    </Button>
+                    <Button onClick={() => handleDelete(note._id)}>
+                      Delete
+                    </Button>
+                    <Button onClick={() => handleShareNote(note._id)}>
+                      Share
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              ))}
+          </Box>
+          <Button onClick={() => router.push("/dashboard/new")}>
+            Create Notes
+          </Button>
         </Box>
-        <Button onClick={() => router.push("/dashboard/new")}>
-          Create Notes
-        </Button>
-      </Box>
+      )}
       {toaster && (
         <Toaster
           open={toaster.open}

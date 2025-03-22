@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 const EditNote = () => {
   const { id } = useParams();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [toaster, setToaster] = useState<any>(null);
@@ -30,6 +31,8 @@ const EditNote = () => {
         message: "Error while fetching notes",
         onClose: () => setToaster(null),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,6 +42,7 @@ const EditNote = () => {
 
   const handleSaveNote = async (e: any) => {
     try {
+      setLoading(true);
       e.preventDefault();
       const token = localStorage.getItem("token");
       const result = await fetch(`/api/notes/${id}`, {
@@ -63,27 +67,32 @@ const EditNote = () => {
         message: "Error while creating note",
         onClose: () => setToaster(null),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-
   return (
     <>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <Typography>Title</Typography>
-        <TextField
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          type="string"
-        />
-        <Typography>Content</Typography>
-        <TextField
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          type="string"
-        />
-        <Button onClick={handleSaveNote}>Save Note</Button>
-      </Box>
+      {loading ? (
+        <Box>LOADING...</Box>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <Typography>Title</Typography>
+          <TextField
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            type="string"
+          />
+          <Typography>Content</Typography>
+          <TextField
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            type="string"
+          />
+          <Button onClick={handleSaveNote}>Save Note</Button>
+        </Box>
+      )}
       {toaster && (
         <Toaster
           open={toaster.open}

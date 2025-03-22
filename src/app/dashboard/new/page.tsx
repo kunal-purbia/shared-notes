@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const CreateNote = () => {
+  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [toaster, setToaster] = useState<any>(null);
   const router = useRouter();
   const handleSaveNote = async (e: any) => {
     try {
+      setLoading(true);
       e.preventDefault();
       const token = localStorage.getItem("token");
       const result = await fetch("/api/notes", {
@@ -35,26 +37,32 @@ const CreateNote = () => {
         message: "Error while creating note",
         onClose: () => setToaster(null),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <Typography>Title</Typography>
-        <TextField
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          type="string"
-        />
-        <Typography>Content</Typography>
-        <TextField
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          type="string"
-        />
-        <Button onClick={handleSaveNote}>Save Note</Button>
-      </Box>
+      {loading ? (
+        <Box>LOADING...</Box>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <Typography>Title</Typography>
+          <TextField
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            type="string"
+          />
+          <Typography>Content</Typography>
+          <TextField
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            type="string"
+          />
+          <Button onClick={handleSaveNote}>Save Note</Button>
+        </Box>
+      )}
       {toaster && (
         <Toaster
           open={toaster.open}
