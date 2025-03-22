@@ -1,10 +1,17 @@
 import { connectDatabase } from "@/utils/db";
-import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
+import User from "@/models/User.Schema";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     await connectDatabase();
-    console.log(req.body);
+    const { email, password } = await req.json();
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashedPassword });
+    await user.save();
+
     return NextResponse.json(
       { message: "Account sign up successfull" },
       { status: 201 }
