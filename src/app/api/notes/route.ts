@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect("/auth/login");
 
   if (!title || !content) {
     return NextResponse.json(
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect("/auth/login");
 
   const notes = await Note.find({ userId: user.id });
   return NextResponse.json(notes);

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect("/auth/login");
 
   const note = await Note.findById(params.id);
   if (!note || note.userId !== user.id) {
@@ -23,7 +23,7 @@ export async function PUT(req: NextRequest, { params }) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect("/auth/login");
 
   const note = await Note.findById(params.id);
   if (!note || note.userId !== user.id) {
@@ -45,7 +45,7 @@ export async function DELETE(req: NextRequest, { params }) {
 
   const user: any = await verifyToken(req);
   if (!user)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.redirect("/auth/login");
 
   const note = await Note.findById(params.id);
   if (!note || note.userId !== user.id) {

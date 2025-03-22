@@ -41,7 +41,7 @@ const Login = () => {
   };
   return (
     <>
-      <Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         <Typography>Email</Typography>
         <TextField
           value={email}
