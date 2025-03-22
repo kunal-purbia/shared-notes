@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { connectDatabase } from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import Note from "@/models/Notes.Schema";

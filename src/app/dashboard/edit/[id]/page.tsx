@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Toaster } from "@/components/Toaster";
 import { Box, Typography, TextField, Button } from "@mui/material";

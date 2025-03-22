@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import verifyToken from "@/lib/auth";
 import { connectDatabase } from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import Note from "@/models/Notes.Schema";
 
-export async function GET(req: NextRequest, { params }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDatabase();
 
   const user: any = await verifyToken(req);
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest, { params }) {
   return NextResponse.json(note);
 }
 
-export async function PUT(req: NextRequest, { params }) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDatabase();
 
   const user: any = await verifyToken(req);

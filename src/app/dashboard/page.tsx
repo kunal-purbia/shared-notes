@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Toaster } from "@/components/Toaster";
 import { Box, Button, TextField, Typography } from "@mui/material";
@@ -78,7 +79,7 @@ const Dashboard = () => {
     if (searchValue === "") {
       fetchNotes();
     } else {
-      const newNotes = notes.filter((note) =>
+      const newNotes = notes.filter((note: any) =>
         note?.title.toLowerCase().includes(searchValue.toLowerCase())
       );
       setNotes(newNotes);
@@ -102,7 +103,7 @@ const Dashboard = () => {
           <Box>
             {notes &&
               notes.length > 0 &&
-              notes.map((note, index) => (
+              notes.map((note: any, index) => (
                 <Box
                   sx={{
                     width: "100%",

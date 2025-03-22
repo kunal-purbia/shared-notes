@@ -8,8 +8,9 @@ export default async function verifyToken(req: NextRequest) {
   if (!token) return null;
 
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, JWT_SECRET!);
   } catch (error) {
+    console.log(error)
     return null;
   }
 }
