@@ -26,15 +26,15 @@ const Login = () => {
           message: res.message,
           onClose: () => setToaster(null),
         });
-        router.push("/auth/dashboard");
+        router.push("/dashboard");
       } else {
         throw new Error(res.message);
       }
     } catch (error) {
-      console.log("Error while registration", error);
+      console.log("Error while login", error);
       setToaster({
         open: true,
-        message: "Error while registration",
+        message: `Error: ${error}`,
         onClose: () => setToaster(null),
       });
     }
