@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
   const user: any = await verifyToken(req);
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   if (!title || !content) {
     return NextResponse.json(
       { message: "Title and content are required" },
@@ -30,5 +31,11 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   await connectDatabase();
-  const notes = await Note.find({ userId: userId });
+
+  const user: any = await verifyToken(req);
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const notes = await Note.find({ userId: user.id });
+  return NextResponse.json(notes);
 }
