@@ -1,6 +1,6 @@
 "use client";
 import { Toaster } from "@/components/Toaster";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -8,6 +8,7 @@ const Dashboard = () => {
   const router = useRouter();
   const [notes, setNotes] = useState([]);
   const [toaster, setToaster] = useState<any>(null);
+  const [searchValue, setSearchValue] = useState("");
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -36,11 +37,36 @@ const Dashboard = () => {
   return (
     <>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        {notes && notes.length > 0 ? (
-          notes.map((note, index) => <p key={index}>{note.title}</p>)
-        ) : (
-          <p>No notes found</p>
-        )}
+        <TextField
+          label="Search Notes"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+        <Box>
+          {notes &&
+            notes.length > 0 &&
+            notes.filter((note) =>
+              note?.title
+                .toLowerCase()
+                .includes(searchValue.toLowerCase())
+                .map((note, index) => (
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                    }}
+                    key={index}
+                  >
+                    <Typography>note.title</Typography>
+                    <Box>
+                      <Button>Edit</Button>
+                      <Button>Delete</Button>
+                    </Box>
+                  </Box>
+                ))
+            )}
+        </Box>
         <Button onClick={() => router.push("/dashboard/new")}>
           Create Notes
         </Button>
