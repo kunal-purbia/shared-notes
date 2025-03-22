@@ -1,35 +1,53 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Toaster } from "@/components/Toaster";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
+interface Note {
+  _id: string;
+  title: string;
+}
+
 const Dashboard = () => {
   const router = useRouter();
-  const [notes, setNotes] = useState([]);
-  const [toaster, setToaster] = useState<any>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+  const [toaster, setToaster] = useState<{
+    open: boolean;
+    message: string;
+    onClose: () => void;
+  } | null>(null);
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchNotes = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const result = await fetch("/api/notes", {
+      const response = await fetch("/api/notes", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      const res = await result.json();
+      const res = await response.json();
+
       if (res.message === "Unauthorized") {
         router.push("/auth/login");
       } else {
         setNotes(res.notes);
+        setFilteredNotes(res.notes);
       }
     } catch (error) {
-      console.log("Error while fetching notes", error);
+      console.error("Error while fetching notes", error);
       setToaster({
         open: true,
         message: "Error while fetching notes",
@@ -41,20 +59,19 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const token = await localStorage.getItem("token");
-      const result = await fetch(`/api/notes/${id}`, {
+      const token = localStorage.getItem("token");
+      await fetch(`/api/notes/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      await result.json();
       fetchNotes();
     } catch (error) {
-      console.log("Error while deleting note", error);
+      console.error("Error while deleting note", error);
       setToaster({
         open: true,
         message: "Error while deleting note",
@@ -70,47 +87,52 @@ const Dashboard = () => {
     navigator.clipboard.writeText(shareUrl);
     setToaster({
       open: true,
-      message: "URL copy to clipboard",
+      message: "URL copied to clipboard",
       onClose: () => setToaster(null),
     });
   };
 
   useEffect(() => {
-    if (searchValue === "") {
-      fetchNotes();
-    } else {
-      const newNotes = notes.filter((note: any) =>
-        note?.title.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setNotes(newNotes);
-    }
-  }, [searchValue]);
-
-  useEffect(() => {
     fetchNotes();
   }, []);
+
+  useEffect(() => {
+    if (searchValue === "") {
+      setFilteredNotes(notes);
+    } else {
+      setFilteredNotes(
+        notes.filter((note) =>
+          note.title.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
+    }
+  }, [searchValue, notes]);
+
   return (
     <>
       {loading ? (
         <Box>LOADING...</Box>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <Box
+          sx={{ display: "flex", flexDirection: "column", gap: 2, padding: 2 }}
+        >
           <TextField
             label="Search Notes"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
           <Box>
-            {notes &&
-              notes.length > 0 &&
-              notes.map((note: any, index) => (
+            {filteredNotes.length > 0 ? (
+              filteredNotes.map((note) => (
                 <Box
+                  key={note._id}
                   sx={{
                     width: "100%",
                     display: "flex",
                     justifyContent: "space-between",
+                    padding: 1,
+                    borderBottom: "1px solid #ddd",
                   }}
-                  key={index}
                 >
                   <Typography>{note.title}</Typography>
                   <Box>
@@ -127,10 +149,16 @@ const Dashboard = () => {
                     </Button>
                   </Box>
                 </Box>
-              ))}
+              ))
+            ) : (
+              <Typography>No notes found.</Typography>
+            )}
           </Box>
-          <Button onClick={() => router.push("/dashboard/new")}>
-            Create Notes
+          <Button
+            variant="contained"
+            onClick={() => router.push("/dashboard/new")}
+          >
+            Create Note
           </Button>
         </Box>
       )}
